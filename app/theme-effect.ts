@@ -1,36 +1,21 @@
 export const themeEffect = function () {
-  // `null` preference implies system (auto)
   const pref = localStorage.getItem("theme");
+  const isDarkThemePreferred = pref === "dark" || (!pref && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const themeColor = isDarkThemePreferred ? "#1c1c1c" : "#fcfcfc";
+  const themeClass = isDarkThemePreferred ? "dark" : "light";
 
-  if (null === pref) {
-    document.documentElement.classList.add("theme-system");
-  } else {
-    document.documentElement.classList.remove("theme-system");
-  }
+  // 统一处理文档根元素的类
+  document.documentElement.classList.toggle("theme-system", pref === null);
+  document.documentElement.classList.toggle("dark", isDarkThemePreferred);
+  document.documentElement.classList.add("pause-transitions");
 
-  if (
-    pref === "dark" ||
-    (!pref && window.matchMedia("(prefers-color-scheme: dark)").matches)
-  ) {
-    document.documentElement.classList.add("pause-transitions");
-    document.documentElement.classList.add("dark");
-    document.head
-      .querySelector("meta[name=theme-color]")
-      ?.setAttribute("content", "#1c1c1c");
+  // 统一设置主题颜色
+  document.head.querySelector("meta[name=theme-color]")?.setAttribute("content", themeColor);
 
-    requestAnimationFrame(() => {
-      document.documentElement.classList.remove("pause-transitions");
-    });
-    return "dark";
-  } else {
-    document.documentElement.classList.add("pause-transitions");
-    document.documentElement.classList.remove("dark");
-    document.head
-      .querySelector("meta[name=theme-color]")
-      ?.setAttribute("content", "#fcfcfc");
-    requestAnimationFrame(() => {
-      document.documentElement.classList.remove("pause-transitions");
-    });
-    return "light";
-  }
+  // 使用requestAnimationFrame来优化过渡效果
+  requestAnimationFrame(() => {
+    document.documentElement.classList.remove("pause-transitions");
+  });
+
+  return themeClass;
 };
