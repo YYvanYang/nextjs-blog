@@ -37,7 +37,7 @@ export function ThemeToggle() {
   }, [updateTheme]);
 
   const toggleTheme = () => {
-    let newPreference: null | string = currentTheme === "dark" ? "light" : "dark";
+    let newPreference: "dark" | "light" | null = currentTheme === "dark" ? "light" : "dark";
     if (preference !== null && systemTheme === currentTheme) {
       newPreference = null;
       localStorage.removeItem("theme");
